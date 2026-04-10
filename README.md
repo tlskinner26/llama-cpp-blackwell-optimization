@@ -17,7 +17,7 @@ Disclaimer: All coding actions were performed by Claude Code. I simply guided Cl
 
 ## Executive Summary
 
-Through a series of measured, incremental optimizations to llama.cpp's CUDA backend, we achieved the following on a budget RTX 5060 Ti 16 GB ($399 GPU):
+Through a series of measured, incremental optimizations to llama.cpp's CUDA backend, we achieved the following on a budget RTX 5060 Ti 16 GB (<$599 GPU):
 
 | metric                           | result                                                 |
 |:---------------------------------|:-------------------------------------------------------|
