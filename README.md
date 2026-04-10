@@ -1,3 +1,9 @@
+Quick Note: I have not published any of the modified source code to llama.cpp in this repo or within the official llama.cpp repository; however, I did document the high level changes that were introduced. 
+
+Disclaimer: All coding actions were performed by Claude Code. I simply guided Claude to optimize existing llama.cpp to incorporate some performance optimizations and kv-cache compression (TurboQuant-ish) to realize the goal of fitting a large model like Gemma 4 26B A4B onto a budget friendly Nvidia 5060Ti 16GB card. 
+
+
+
 # Blackwell GPU Optimization Research: Gemma 4 26B on RTX 5060 Ti 16 GB
 
 **Date:** 2026-04-09 / 2026-04-10
