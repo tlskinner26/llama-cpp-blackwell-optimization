@@ -37,7 +37,7 @@ On the RTX 5090, the same MXFP4-MOE model delivers:
 
 **The key discovery:** combining FP4 model weight quantization (MXFP4-MOE) with KV cache compression (q4_0) allows a 26-billion parameter model to run with 64k context on a GPU where the standard Q4_K_M quantization cannot even load the model.
 
-### Before / After — RTX 5060 Ti 16 GB ($399 GPU)
+### Before / After — RTX 5060 Ti 16 GB (<$599 GPU)
 
 | metric                        | BEFORE (Q4_K_M, upstream)          | AFTER (MXFP4-MOE + q4_0 KV)         | change            |
 |:------------------------------|:----------------------------------:|:------------------------------------:|:-----------------:|
