@@ -35,14 +35,14 @@ On the RTX 5090, the same MXFP4-MOE model delivers:
 - **+22.7% prompt throughput** vs Q4_K_M (10,733 vs 8,744 tok/s)
 - Powered by Blackwell's native FP4 tensor core MMA instruction
 
-**The key discovery:** combining FP4 model weight quantization (MXFP4-MOE) with KV cache compression (q4_0) allows a 26-billion parameter model to run with 65k context on a GPU where the standard Q4_K_M quantization cannot even load the model.
+**The key discovery:** combining FP4 model weight quantization (MXFP4-MOE) with KV cache compression (q4_0) allows a 26-billion parameter model to run with 64k context on a GPU where the standard Q4_K_M quantization cannot even load the model.
 
 ### Before / After — RTX 5060 Ti 16 GB ($399 GPU)
 
 | metric                        | BEFORE (Q4_K_M, upstream)          | AFTER (MXFP4-MOE + q4_0 KV)         | change            |
 |:------------------------------|:----------------------------------:|:------------------------------------:|:-----------------:|
 | **Runs Gemma 4 26B?**        | NO (15.85 GiB > 16 GB VRAM)       | **YES** (13.70 GiB fits)            | model unlocked    |
-| **Max context**               | 0 (can't load)                     | **65,536 tokens**                    | 0 to 65k         |
+| **Max context**               | 0 (can't load)                     | **65,536 tokens**                    | 0 to 64k         |
 | **Decode speed**              | N/A                                | **95.22 tok/s**                      | —                 |
 | **Prompt speed**              | N/A                                | **3,476 tok/s**                      | —                 |
 | **KV cache rotation (ISWA)** | not supported                      | **supported** (per-layer dispatch)   | new capability    |
@@ -257,16 +257,16 @@ All measurements with 1 parallel slot, flash attention enabled:
 |:-----------------------|:-----------:|:------------:|:----------------------------|
 | f16 (no compression)   |       ~32k  |      87 MiB  | Default, wasteful           |
 | q8_0                   |       ~40k  |       7 MiB  | Tight, not recommended      |
-| **q4_0**               |     **~65k** |    **41 MiB** | **Best tradeoff**          |
+| **q4_0**               |     **~64k** |    **41 MiB** | **Best tradeoff**          |
 | q4_0 (safe operating)  |     **49k** |   **131 MiB** | **Recommended production** |
 
-### Memory Breakdown at 65k Context (q4_0 KV, 1 slot)
+### Memory Breakdown at 64k Context (q4_0 KV, 1 slot)
 
 | component                                 |       size |
 |:------------------------------------------|-----------:|
 | Model weights (MXFP4-MOE)                 | ~13,700 MiB|
 | SWA KV cache (25 layers, capped)          |    ~800 MiB|
-| Non-SWA KV cache (5 layers, 65k cells)    |    ~365 MiB|
+| Non-SWA KV cache (5 layers, 64k cells)    |    ~365 MiB|
 | Compute buffer                            |    ~500 MiB|
 | **Total**                                 | **~15,365 MiB** |
 | GPU capacity                              |  15,844 MiB|
@@ -274,10 +274,10 @@ All measurements with 1 parallel slot, flash attention enabled:
 
 ### The Combined Effect
 
-The 65k context on 16 GB is enabled by TWO independent optimizations working together:
+The 64k context on 16 GB is enabled by TWO independent optimizations working together:
 
 1. **FP4 model weights** (MXFP4-MOE): saves 2.15 GiB vs Q4_K_M, making the model fit at all
-2. **q4_0 KV cache compression**: reduces per-token KV memory by ~3.5x vs f16, extending context from ~32k to ~65k
+2. **q4_0 KV cache compression**: reduces per-token KV memory by ~3.5x vs f16, extending context from ~32k to ~64k
 
 Neither optimization alone achieves this:
 - MXFP4 weights + f16 KV = model fits but only ~32k context
